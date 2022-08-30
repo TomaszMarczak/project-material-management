@@ -18,4 +18,9 @@ app.use(
   })
 );
 
-app.listen(port, console.log(`Server running on port ${port}`));
+app.listen(
+  port,
+  console.log(
+    `Server running on port ${port}. Visit http://localhost:${port}/graphql`
+  )
+);
