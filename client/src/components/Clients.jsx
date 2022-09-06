@@ -24,26 +24,28 @@ export default function Clients() {
           <IoAdd />
         </Button>
       </Stack>
-      <Table>
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Phone</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          {!loading &&
-            !error &&
-            data.allClients.map((client, index) => {
+      {data.allClients.length > 0 ? (
+        <Table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Phone</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {data.allClients.map((client, index) => {
               return (
                 <ClientRow key={client.id} client={client} index={index} />
               );
             })}
-        </tbody>
-      </Table>
+          </tbody>
+        </Table>
+      ) : (
+        <h3 className="py-3">No clients in database</h3>
+      )}
       <CreateClientModal
         show={showCreateClientModal}
         setShow={setShowCreateClientModal}

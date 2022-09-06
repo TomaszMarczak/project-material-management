@@ -21,11 +21,13 @@ export default function CreateClientModal({ show, setShow }) {
     e.preventDefault();
     if (name === "" || email === "" || phone === "") {
       alert("Can't do that");
-    } else addClient(name, email, phone);
-    setShow(false);
-    setName("");
-    setEmail("");
-    setPhone("");
+    } else {
+      addClient(name, email, phone);
+      setShow(false);
+      setName("");
+      setEmail("");
+      setPhone("");
+    }
   };
 
   return (
@@ -71,7 +73,7 @@ export default function CreateClientModal({ show, setShow }) {
             variant="primary"
             className="float-end"
           >
-            Submit
+            Add
           </Button>
         </Form>
       </Modal.Body>
