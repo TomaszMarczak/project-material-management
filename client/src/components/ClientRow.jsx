@@ -1,12 +1,15 @@
 import { useMutation } from "@apollo/client";
 import { Button } from "react-bootstrap";
 import { DELETE_CLIENT } from "../mutations/clientMutations";
+import { GET_CLIENTS } from "../queries/clientQueries";
 import { BsTrash } from "react-icons/bs";
+
 export default function ClientRow({ client, index }) {
-  const [deleteClient] = useMutation(DELETE_CLIENT, {
+  const [deleteClient, { data, loading, error }] = useMutation(DELETE_CLIENT, {
     variables: {
       id: client.id,
     },
+    refetchQueries: [{ query: GET_CLIENTS }],
   });
 
   return (
