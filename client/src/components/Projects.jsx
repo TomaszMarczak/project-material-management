@@ -3,12 +3,15 @@ import { useState } from "react";
 import { Button, Stack } from "react-bootstrap";
 import { IoAdd } from "react-icons/io5";
 import CreateProjectModal from "../components/CreateProjectModal";
+import EditProjectModal from "./EditProjectModal";
 import { GET_PROJECTS } from "../queries/projectQueries";
 import ProjectCard from "./ProjectCard";
 
 export default function Projects() {
   const { loading, error, data } = useQuery(GET_PROJECTS);
   const [showCreateProjectModal, setShowCreateProjectModal] = useState(false);
+  const [showEditProjectModal, setShowEditProjectModal] = useState(false);
+  const [editProjectId, setEditProjectId] = useState("");
 
   if (loading) return <h1>Loading...</h1>;
   if (error) return <h1>Error...</h1>;
@@ -33,7 +36,14 @@ export default function Projects() {
       >
         {!loading && !error && data?.allProjects.length > 0 ? (
           data.allProjects.map((project) => {
-            return <ProjectCard key={project.id} project={project} />;
+            return (
+              <ProjectCard
+                key={project.id}
+                project={project}
+                setShowEditProjectModal={setShowEditProjectModal}
+                setEditProjectId={setEditProjectId}
+              />
+            );
           })
         ) : (
           <h3 className="py-3">No projects in database</h3>
@@ -43,6 +53,11 @@ export default function Projects() {
       <CreateProjectModal
         show={showCreateProjectModal}
         setShow={setShowCreateProjectModal}
+      />
+      <EditProjectModal
+        show={showEditProjectModal}
+        setShow={setShowEditProjectModal}
+        projectId={editProjectId || ""}
       />
     </>
   );

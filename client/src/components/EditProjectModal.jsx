@@ -1,51 +1,67 @@
 import { useMutation, useQuery } from "@apollo/client";
-import { GET_CLIENTS } from "../queries/clientQueries";
-import { GET_PROJECTS } from "../queries/projectQueries";
-import { ADD_PROJECT } from "../mutations/projectMutations";
+import { GET_PROJECTS, GET_PROJECT } from "../queries/projectQueries";
+import { UPDATE_PROJECT } from "../mutations/projectMutations";
 import { Button, Form, Modal } from "react-bootstrap";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
-export default function CreateProjectModal({ show, setShow }) {
-  const [name, setName] = useState();
-  const [description, setDescription] = useState();
-  const [status, setStatus] = useState("new");
-  const [client, setClient] = useState();
+export default function EditProjectModal({ show, setShow, projectId }) {
+  const { loading, error, data } = useQuery(GET_PROJECT, {
+    variables: { id: projectId },
+  });
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
+  const [status, setStatus] = useState("");
 
-  const { loading, error, data } = useQuery(GET_CLIENTS);
-  const [addProject] = useMutation(ADD_PROJECT, {
+  const [updateProject] = useMutation(UPDATE_PROJECT, {
     variables: {
+      id: projectId,
       name: name,
       description: description,
       status: status,
-      client: client,
     },
     refetchQueries: [{ query: GET_PROJECTS }],
   });
 
+  useEffect(() => {
+    if (!loading && !error) {
+      setName(data.project.name);
+      setDescription(data.project.description);
+      setStatus(() => {
+        switch (data.project.status) {
+          case "Not Started":
+            return "new";
+          case "In Progress":
+            return "progress";
+          case "Completed":
+            return "completed";
+          default:
+            throw new Error(`Unknown status: ${data.project.status}`);
+        }
+      });
+    }
+  }, [data, loading, error]);
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (name === "" || description === "" || status === "" || client === "") {
-      alert("Can't do that");
+    if (!name && !description && status) {
+      return alert("Can't do that");
     } else {
-      addProject(name, description, status, client);
+      updateProject(name, description, status);
       setShow(false);
-      setName("");
-      setDescription("");
-      setStatus("new");
-      setClient("");
     }
   };
 
   return (
     <Modal show={show} onHide={() => setShow(false)}>
       <Modal.Header closeButton>
-        <Modal.Title>Create Project</Modal.Title>
+        <Modal.Title>Edit Project</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <Form>
           <Form.Group className="my-2">
             <Form.Label>Name:</Form.Label>
             <Form.Control
+              defaultValue={data?.project.name}
               required
               type="text"
               placeholder="Enter project name"
@@ -55,6 +71,7 @@ export default function CreateProjectModal({ show, setShow }) {
           <Form.Group className="my-2">
             <Form.Label>Description:</Form.Label>
             <Form.Control
+              defaultValue={data?.project.description}
               as="textarea"
               rows={3}
               required
@@ -66,32 +83,12 @@ export default function CreateProjectModal({ show, setShow }) {
           <Form.Group className="my-2">
             <Form.Label>Status:</Form.Label>
             <Form.Select
-              onChange={(e) => setStatus(e.target.value)}
               value={status}
+              onChange={(e) => setStatus(e.target.value)}
             >
               <option value="new">Not started</option>
               <option value="progress">In progress</option>
               <option value="completed">Completed</option>
-            </Form.Select>
-          </Form.Group>
-          <Form.Group className="my-2">
-            <Form.Label>Client:</Form.Label>
-            <Form.Select
-              onChange={(e) => setClient(e.target.value)}
-              value={client}
-            >
-              <option value="" hidden>
-                Select client
-              </option>
-              {!loading &&
-                !error &&
-                data.allClients.map((client) => {
-                  return (
-                    <option key={client.id} value={client.id}>
-                      {client.name}
-                    </option>
-                  );
-                })}
             </Form.Select>
           </Form.Group>
           <Button
@@ -100,7 +97,7 @@ export default function CreateProjectModal({ show, setShow }) {
             variant="primary"
             className="float-end"
           >
-            Add
+            Edit
           </Button>
         </Form>
       </Modal.Body>

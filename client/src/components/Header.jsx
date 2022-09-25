@@ -11,7 +11,9 @@ export default function Header() {
             Project Material MGMT
           </Navbar.Brand>
         </Link>
-        <Navbar.Text className="text-white">Hello</Navbar.Text>
+        <Navbar.Text className="text-white">
+          Based on app by B. Traversy
+        </Navbar.Text>
       </Container>
     </Navbar>
   );

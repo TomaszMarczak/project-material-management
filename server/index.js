@@ -3,6 +3,7 @@ const cors = require("cors");
 require("dotenv").config();
 const { graphqlHTTP } = require("express-graphql");
 const connectDB = require("./config/db");
+const morgan = require("morgan");
 const schema = require("./schema/schema");
 const port = process.env.PORT || 5000;
 
@@ -17,7 +18,7 @@ app.use(
     graphiql: process.env.NODE_ENV === "development",
   })
 );
-
+app.use(morgan("dev"));
 app.listen(
   port,
   console.log(
