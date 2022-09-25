@@ -2,6 +2,7 @@ import { useMutation } from "@apollo/client";
 import { Button } from "react-bootstrap";
 import { DELETE_CLIENT } from "../mutations/clientMutations";
 import { GET_CLIENTS } from "../queries/clientQueries";
+import { GET_PROJECTS } from "../queries/projectQueries";
 import { BsTrash } from "react-icons/bs";
 
 export default function ClientRow({ client, index }) {
@@ -9,7 +10,7 @@ export default function ClientRow({ client, index }) {
     variables: {
       id: client.id,
     },
-    refetchQueries: [{ query: GET_CLIENTS }],
+    refetchQueries: [{ query: GET_CLIENTS }, { query: GET_PROJECTS }],
   });
 
   return (
